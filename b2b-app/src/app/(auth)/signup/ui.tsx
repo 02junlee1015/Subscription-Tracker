@@ -5,28 +5,33 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 
 export function SignupForm() {
   const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
   const [error, setError] = React.useState<string | null>(null);
+  const [success, setSuccess] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(false);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    setSuccess(null);
     setLoading(true);
     try {
-      const supabase = createSupabaseBrowserClient();
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
+      const res = await fetch("/api/access-requests", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email }),
       });
-      if (error) throw error;
-      window.location.href = "/";
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error(txt || "Request failed");
+      }
+      setSuccess(
+        "Request submitted. Once approved, you'll receive an email to set your password and log in."
+      );
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Signup failed";
+      const msg = err instanceof Error ? err.message : "Request failed";
       setError(msg);
     } finally {
       setLoading(false);
@@ -46,26 +51,12 @@ export function SignupForm() {
           required
         />
       </div>
-      <div className="grid gap-2">
-        <Label htmlFor="password">Password</Label>
-        <Input
-          id="password"
-          type="password"
-          autoComplete="new-password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          minLength={8}
-          required
-        />
-        <p className="text-xs text-[hsl(var(--muted-foreground))]">
-          Use at least 8 characters.
-        </p>
-      </div>
       {error ? (
         <p className="text-sm text-[hsl(var(--destructive))]">{error}</p>
       ) : null}
+      {success ? <p className="text-sm">{success}</p> : null}
       <Button disabled={loading} type="submit">
-        {loading ? "Creating..." : "Create account"}
+        {loading ? "Submitting..." : "Submit request"}
       </Button>
     </form>
   );

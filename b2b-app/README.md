@@ -30,6 +30,7 @@ Stack:
 1) Create a Supabase project.
 2) Supabase Dashboard → **SQL Editor** → run:
    - `supabase/schema.sql`
+   - `supabase/access_requests.sql` (adds “request access → admin approve” flow)
 3) Supabase Dashboard → **Authentication → Users** → create:
    - `admin@company.com` with a password
 4) Supabase Dashboard → **SQL Editor** → promote that user to admin:
@@ -44,6 +45,8 @@ Create `./.env.local`:
 ```bash
 NEXT_PUBLIC_SUPABASE_URL="https://YOUR_PROJECT.supabase.co"
 NEXT_PUBLIC_SUPABASE_ANON_KEY="YOUR_ANON_PUBLIC_KEY"
+SUPABASE_SERVICE_ROLE_KEY="YOUR_SERVICE_ROLE_KEY"
+NEXT_PUBLIC_SITE_URL="http://localhost:3000"
 ```
 
 ### Run locally
@@ -57,7 +60,14 @@ npm run dev
 2) Add env vars in Vercel:
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `NEXT_PUBLIC_SITE_URL`
 3) Deploy.
+
+### Access request flow (new)
+- Users do **not** self-signup anymore.
+- Go to `/signup` (Request access) → enter email → admin approves in `/admin`.
+- On approval, Supabase sends an **invite email** so the user can set a password and then log in.
 
 ### Excel output format
 The downloaded `.xlsx` contains exactly these columns:

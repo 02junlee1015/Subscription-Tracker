@@ -16,9 +16,9 @@ export default function LoginPage() {
         </CardContent>
       </Card>
       <p className="text-sm text-[hsl(var(--muted-foreground))]">
-        No account?{" "}
+        First time here?{" "}
         <Link className="underline" href="/signup">
-          Create one
+          Request access
         </Link>
       </p>
     </div>

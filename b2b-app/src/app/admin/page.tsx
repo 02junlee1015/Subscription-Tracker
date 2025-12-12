@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { AccessRequestsPanel } from "./ui";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +31,14 @@ type OrderRow = {
   file_name: string | null;
 };
 
+type AccessRequestRow = {
+  id: string;
+  email: string;
+  status: "pending" | "approved" | "rejected";
+  created_at: string;
+  decided_at: string | null;
+};
+
 export default async function AdminPage() {
   const supabase = await createSupabaseServerClient();
   const {
@@ -46,7 +55,13 @@ export default async function AdminPage() {
 
   if (!profile || profile.role !== "admin") redirect("/");
 
-  const [{ data: brands }, { data: models }, { data: parts }, { data: orders }] =
+  const [
+    { data: brands },
+    { data: models },
+    { data: parts },
+    { data: orders },
+    { data: accessRequests },
+  ] =
     await Promise.all([
       supabase.from("brands").select("id,name,code").order("name"),
       supabase
@@ -66,6 +81,11 @@ export default async function AdminPage() {
         .select("id,created_at,status,user_id,file_name")
         .order("created_at", { ascending: false })
         .limit(20),
+      supabase
+        .from("access_requests")
+        .select("id,email,status,created_at,decided_at")
+        .order("created_at", { ascending: false })
+        .limit(50),
     ]);
 
   return (
@@ -76,6 +96,8 @@ export default async function AdminPage() {
           Logged in as {profile.email} (admin)
         </p>
       </div>
+
+      <AccessRequestsPanel initial={(accessRequests ?? []) as AccessRequestRow[]} />
 
       <Card>
         <CardHeader>

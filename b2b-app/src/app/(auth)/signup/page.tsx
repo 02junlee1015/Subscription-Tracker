@@ -14,9 +14,9 @@ export default function SignupPage() {
     <div className="mx-auto flex w-full max-w-md flex-col gap-6 py-10">
       <Card>
         <CardHeader>
-          <CardTitle>Create account</CardTitle>
+          <CardTitle>Request access</CardTitle>
           <CardDescription>
-            New users are created as <b>guest</b> by default.
+            Submit your email. An admin must approve before you can log in.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -24,7 +24,7 @@ export default function SignupPage() {
         </CardContent>
       </Card>
       <p className="text-sm text-[hsl(var(--muted-foreground))]">
-        Have an account?{" "}
+        Already approved?{" "}
         <Link className="underline" href="/login">
           Login
         </Link>
